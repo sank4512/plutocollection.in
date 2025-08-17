@@ -58,8 +58,8 @@ Open your browser and go to: `http://localhost:5000`
 ## 👤 Default Admin Account
 
 The application automatically creates an admin user:
-- **Username**: `admin`
-- **Password**: `admin123`
+- **Username**: 
+- **Password**:
 
 ## 📁 Project Structure
 
@@ -260,3 +260,4 @@ If you need help:
 ---
 
 **Happy Shopping! 🛍️**
+
