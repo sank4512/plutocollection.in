@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Order Detail - Admin{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>
+                <i class="fas fa-shopping-cart me-2"></i>Order Detail
+            </h2>
+            <a href="{{ url_for('admin_orders') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Orders
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Order Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Order Number:</strong> {{ order.order_number }}</p>
+                        <p><strong>Order Date:</strong> {{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                        <p><strong>Total Amount:</strong> ₹{{ "%.2f"|format(order.total_amount) }}</p>
+                        <p><strong>Advance Paid:</strong> <span class="text-success">₹{{ "%.2f"|format(order.advance_paid) }}</span></p>
+                        <p><strong>Remaining Amount:</strong> <span class="text-warning">₹{{ "%.2f"|format(order.remaining_amount) }}</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Customer:</strong> 
+                            {% if order.user %}
+                            {{ order.user.username }} ({{ order.user.email }})
+                            {% else %}
+                            <span class="text-muted">User not found</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Phone:</strong> {{ order.phone }}</p>
+                        <p><strong>Payment Method:</strong> Cash on Delivery (₹100 Advance)</p>
+                        {% if order.utr_number %}
+                        <p><strong>UTR Number:</strong> <span class="text-success">{{ order.utr_number }}</span></p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <h6>Shipping Address:</h6>
+                    <p class="text-muted">{{ order.shipping_address }}</p>
+                </div>
+            </div>
+        </div>
+        
+        {% if order.payment_screenshot %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-image me-2"></i>Payment Screenshot
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <img src="{{ url_for('static', filename='images/payments/' + order.payment_screenshot) }}" 
+                     alt="Payment Screenshot" class="img-fluid" style="max-width: 400px;">
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Order Items</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order_items %}
+                            <tr>
+                                <td>
+                                    <strong>{{ item.product.name }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ item.product.category }}</small>
+                                    {% if item.selected_color or item.selected_size %}
+                                    <div class="mt-1">
+                                        {% if item.selected_color %}
+                                        <small class="text-muted">
+                                            <i class="fas fa-palette me-1"></i>Color: {{ item.selected_color }}
+                                        </small>
+                                        {% endif %}
+                                        {% if item.selected_size %}
+                                        <small class="text-muted ms-2">
+                                            <i class="fas fa-ruler me-1"></i>Size: {{ item.selected_size }}
+                                        </small>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                </td>
+                                <td>₹{{ "%.2f"|format(item.price) }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>₹{{ "%.2f"|format(item.price * item.quantity) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Update Order Status</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin_update_order_status', order_id=order.id) }}">
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Current Status</label>
+                        <select class="form-control" id="status" name="status">
+                            <option value="pending" {{ 'selected' if order.status == 'pending' }}>Pending</option>
+                            <option value="processing" {{ 'selected' if order.status == 'processing' }}>Processing</option>
+                            <option value="shipped" {{ 'selected' if order.status == 'shipped' }}>Shipped</option>
+                            <option value="delivered" {{ 'selected' if order.status == 'delivered' }}>Delivered</option>
+                            <option value="cancelled" {{ 'selected' if order.status == 'cancelled' }}>Cancelled</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Update Status
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">Payment Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span>₹{{ "%.2f"|format(order.total_amount) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Shipping:</span>
+                    <span>Free</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-2">
+                    <strong>Total Amount:</strong>
+                    <strong>₹{{ "%.2f"|format(order.total_amount) }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Advance Paid:</span>
+                    <span class="text-success">₹{{ "%.2f"|format(order.advance_paid) }}</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>To Collect:</span>
+                    <span class="text-warning">₹{{ "%.2f"|format(order.remaining_amount) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="row fade-in">
+    <div class="col-md-6">
+        {% if product.image_url %}
+        <div class="product-detail-image-container">
+            <img src="{{ product.image_url }}" class="img-fluid rounded product-detail-image" alt="{{ product.name }}">
+        </div>
+        {% else %}
+        <div class="bg-light rounded d-flex align-items-center justify-content-center product-detail-image-container">
+            <i class="fas fa-image text-muted" style="font-size: 4rem;"></i>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-6">
+        <h1 class="mb-3">{{ product.name }}</h1>
+        <p class="text-muted mb-3">{{ product.description }}</p>
+        
+        <div class="mb-3">
+            <span class="badge bg-secondary">{{ product.category }}</span>
+        </div>
+        
+        <div class="mb-4">
+            <h3 class="text-primary">₹{{ "%.2f"|format(product.price) }}</h3>
+            <small class="text-muted">Stock: {{ product.stock }} units available</small>
+        </div>
+        
+        {% if product.colors_list or product.sizes_list %}
+        <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}" class="mb-4">
+            {% if product.colors_list %}
+            <div class="mb-3">
+                <label for="color" class="form-label"><strong>Select Color:</strong></label>
+                <select class="form-select" id="color" name="color" required>
+                    <option value="">Choose a color</option>
+                    {% for color in product.colors_list %}
+                    <option value="{{ color }}">{{ color }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            
+            {% if product.sizes_list %}
+            <div class="mb-3">
+                <label for="size" class="form-label"><strong>Select Size:</strong></label>
+                <select class="form-select" id="size" name="size" required>
+                    <option value="">Choose a size</option>
+                    {% for size in product.sizes_list %}
+                    <option value="{{ size }}">{{ size }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            
+            <div class="mb-3">
+                <label for="quantity" class="form-label"><strong>Quantity:</strong></label>
+                <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" required>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                </button>
+            </div>
+        </form>
+        {% else %}
+        <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}" class="mb-4">
+            <div class="mb-3">
+                <label for="quantity" class="form-label"><strong>Quantity:</strong></label>
+                <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" max="{{ product.stock }}" required>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                </button>
+            </div>
+        </form>
+        {% endif %}
+        
+        <div class="mt-3">
+            <a href="{{ url_for('home') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Products
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .product-detail-image-container {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .product-detail-image-container:hover {
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        transform: translateY(-5px);
+    }
+    
+    .product-detail-image {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-detail-image-container:hover .product-detail-image {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}

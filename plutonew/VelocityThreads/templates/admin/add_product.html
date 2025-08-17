@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Add Product - Admin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>
+                        <i class="fas fa-plus me-2"></i>Add New Product
+                    </h2>
+                    <a href="{{ url_for('admin_products') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Products
+                    </a>
+                </div>
+                
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label">Category</label>
+                            <select class="form-control" id="category" name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="clothing">Clothing</option>
+                                <option value="accessories">Accessories</option>
+                                <option value="footwear">Footwear</option>
+                                <option value="sports">Sports</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="home">Home & Garden</option>
+                                <option value="beauty">Beauty</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="subcategory" class="form-label">Subcategory</label>
+                            <select class="form-control" id="subcategory" name="subcategory">
+                                <option value="">Select Subcategory (Optional)</option>
+                                <option value="shirts">Shirts</option>
+                                <option value="tshirts">T-Shirts</option>
+                                <option value="pants">Pants</option>
+                                <option value="jeans">Jeans</option>
+                                <option value="jackets">Jackets</option>
+                                <option value="hoodies">Hoodies</option>
+                                <option value="shoes">Shoes</option>
+                                <option value="caps">Caps</option>
+                                <option value="watches">Watches</option>
+                                <option value="bags">Bags</option>
+                                <option value="sunglasses">Sunglasses</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="price" class="form-label">Price ($)</label>
+                            <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="stock" class="form-label">Stock Quantity</label>
+                            <input type="number" class="form-control" id="stock" name="stock" min="0" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="colors" class="form-label">Available Colors</label>
+                            <input type="text" class="form-control" id="colors" name="colors" 
+                                   placeholder="Red, Blue, Green, Black">
+                            <small class="form-text text-muted">Enter colors separated by commas</small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="sizes" class="form-label">Available Sizes</label>
+                            <input type="text" class="form-control" id="sizes" name="sizes" 
+                                   placeholder="S, M, L, XL, XXL">
+                            <small class="form-text text-muted">Enter sizes separated by commas</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="image_url" class="form-label">Image URL (Optional)</label>
+                        <input type="url" class="form-control" id="image_url" name="image_url" 
+                               placeholder="https://example.com/image.jpg">
+                        <small class="form-text text-muted">Enter a valid image URL or leave blank for placeholder</small>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Product
+                        </button>
+                        <a href="{{ url_for('admin_products') }}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

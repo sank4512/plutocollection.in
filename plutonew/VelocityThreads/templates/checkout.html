@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - E-Commerce Store{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">
+            <i class="fas fa-credit-card me-2"></i>Checkout
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Shipping Information</h5>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="address" class="form-label">Shipping Address</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required 
+                                      placeholder="Enter your complete shipping address"></textarea>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required
+                                   placeholder="Enter your phone number">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="utr_number" class="form-label">UTR Number</label>
+                            <input type="text" class="form-control" id="utr_number" name="utr_number" required
+                                   placeholder="Enter UTR number after payment">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="payment_screenshot" class="form-label">Payment Screenshot</label>
+                            <input type="file" class="form-control" id="payment_screenshot" name="payment_screenshot" required
+                                   accept="image/*" placeholder="Upload payment screenshot">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="advance_paid" class="form-label">Advance Amount Paid</label>
+                            <input type="number" class="form-control" id="advance_paid" name="advance_paid" 
+                                   min="100" step="0.01" value="100" required
+                                   placeholder="Enter advance amount paid">
+                            <small class="text-muted">Minimum ₹100 required</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Remaining Amount</label>
+                            <div class="form-control-plaintext" id="remaining_display">
+                                ₹{{ "%.2f"|format(total - 100) }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Payment Instructions:</strong>
+                        <br>
+                        <small>1. Scan the QR code below to make payment of ₹100</small><br>
+                        <small>2. Enter the UTR number received after payment</small><br>
+                        <small>3. Upload the payment screenshot</small><br>
+                        <small>4. Your order will be confirmed after payment verification</small>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-check me-2"></i>Place Order (₹100 Advance)
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Order Summary</h5>
+                
+                {% for product in products %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span><strong>{{ product.name }}</strong></span>
+                        <span>₹{{ "%.2f"|format(product.price * product.quantity) }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <small class="text-muted">Quantity: {{ product.quantity }}</small>
+                    </div>
+                    {% if product.selected_color or product.selected_size %}
+                    <div class="d-flex justify-content-between">
+                        {% if product.selected_color %}
+                        <small class="text-muted">
+                            <i class="fas fa-palette me-1"></i>Color: {{ product.selected_color }}
+                        </small>
+                        {% endif %}
+                        {% if product.selected_size %}
+                        <small class="text-muted">
+                            <i class="fas fa-ruler me-1"></i>Size: {{ product.selected_size }}
+                        </small>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                <hr>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal:</span>
+                    <span>₹{{ "%.2f"|format(total) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Shipping:</span>
+                    <span>Free</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-2">
+                    <strong>Total Amount:</strong>
+                    <strong>₹{{ "%.2f"|format(total) }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Advance Payment:</span>
+                    <span class="text-success" id="advance_display">₹100.00</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>Remaining Amount:</span>
+                    <span class="text-warning" id="remaining_summary">₹{{ "%.2f"|format(total - 100) }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fas fa-qrcode text-primary me-2"></i>Payment QR Code
+                </h6>
+                <div class="text-center">
+                    <img src="{{ url_for('static', filename='images/payment_qr.jpeg') }}" 
+                         alt="Payment QR Code" class="img-fluid mb-2" style="max-width: 200px;">
+                    <p class="text-success fw-bold mb-1">₹100</p>
+                    <p class="text-muted small">Scan QR code to make advance payment</p>
+                    <p class="text-warning small fw-bold">Do payment of ₹100 to confirm order</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fas fa-shield-alt text-success me-2"></i>Secure Checkout
+                </h6>
+                <p class="card-text small text-muted">
+                    Your order information is protected with industry-standard encryption.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const advanceInput = document.getElementById('advance_paid');
+    const remainingDisplay = document.getElementById('remaining_display');
+    const advanceDisplay = document.getElementById('advance_display');
+    const remainingSummary = document.getElementById('remaining_summary');
+    const totalAmount = {{ total }};
+    
+    function updateAmounts() {
+        const advance = parseFloat(advanceInput.value) || 100;
+        const remaining = totalAmount - advance;
+        
+        remainingDisplay.textContent = '₹' + remaining.toFixed(2);
+        advanceDisplay.textContent = '₹' + advance.toFixed(2);
+        remainingSummary.textContent = '₹' + remaining.toFixed(2);
+    }
+    
+    advanceInput.addEventListener('input', updateAmounts);
+    updateAmounts();
+});
+</script>
+{% endblock %}
