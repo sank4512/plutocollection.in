@@ -66,11 +66,78 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <h4 class="card-title">₹{{ "%.2f"|format(total_orders * 100) }}</h4>
+                        <h4 class="card-title">₹{{ "%.2f"|format(total_advance) }}</h4>
                         <p class="card-text">Advance Collected</p>
                     </div>
                     <div>
                         <i class="fas fa-rupee-sign fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Statistics Row -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">₹{{ "%.2f"|format(total_revenue) }}</h4>
+                        <p class="card-text">Total Revenue</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ low_stock_products }}</h4>
+                        <p class="card-text">Low Stock Items</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-exclamation-triangle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ total_orders }}</h4>
+                        <p class="card-text">Total Orders</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-shopping-bag fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-secondary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="card-title">{{ total_users }}</h4>
+                        <p class="card-text">Total Users</p>
+                    </div>
+                    <div>
+                        <i class="fas fa-users fa-2x"></i>
                     </div>
                 </div>
             </div>
@@ -172,6 +239,73 @@
                     <i class="fas fa-shopping-cart text-muted" style="font-size: 3rem;"></i>
                     <p class="text-muted mt-3">No orders yet</p>
                 </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-box me-2"></i>Recent Products
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_products %}
+                <div class="list-group list-group-flush">
+                    {% for product in recent_products %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{ product.name }}</h6>
+                            <small class="text-muted">{{ product.category }}{% if product.subcategory %} - {{ product.subcategory }}{% endif %}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-primary">₹{{ "%.2f"|format(product.price) }}</span>
+                            <br>
+                            <small class="text-muted">Stock: {{ product.stock }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center">No products yet</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-shopping-cart me-2"></i>Recent Orders
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if recent_orders %}
+                <div class="list-group list-group-flush">
+                    {% for order in recent_orders %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">Order #{{ order.order_number }}</h6>
+                            <small class="text-muted">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-{% if order.status == 'completed' %}success{% elif order.status == 'pending' %}warning{% else %}secondary{% endif %}">
+                                {{ order.status|title }}
+                            </span>
+                            <br>
+                            <small class="text-muted">₹{{ "%.2f"|format(order.total_amount) }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center">No orders yet</p>
                 {% endif %}
             </div>
         </div>
