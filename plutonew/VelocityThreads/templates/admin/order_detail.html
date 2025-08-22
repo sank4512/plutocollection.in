@@ -143,6 +143,18 @@
                 </form>
             </div>
         </div>
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0 text-danger">Danger Zone</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin_delete_order', order_id=order.id) }}">
+                    <button class="btn btn-danger w-100" onclick="return confirm('Delete this order? This cannot be undone.')">
+                        <i class="fas fa-trash me-2"></i>Delete Order
+                    </button>
+                </form>
+            </div>
+        </div>
         
         <div class="card mt-3">
             <div class="card-header">
