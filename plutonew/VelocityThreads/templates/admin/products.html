@@ -16,11 +16,74 @@
     </div>
 </div>
 
+<!-- Search and Filter -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="GET" class="row g-3">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" name="search" placeholder="Search products..." value="{{ search }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" name="category">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                            <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat|title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-search me-2"></i>Search
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <a href="{{ url_for('admin_products') }}" class="btn btn-outline-secondary w-100">
+                            <i class="fas fa-times me-2"></i>Clear
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Actions -->
+{% if products %}
+<div class="row mb-3">
+    <div class="col-12">
+        <form method="POST" action="{{ url_for('admin_bulk_delete_products') }}" id="bulkDeleteForm">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete selected products?')">
+                        <i class="fas fa-trash me-2"></i>Delete Selected
+                    </button>
+                    <button type="submit" class="btn btn-outline-danger ms-2" formaction="{{ url_for('admin_cleanup_products') }}" formmethod="POST" onclick="return confirm('Delete ALL products? This cannot be undone.')">
+                        <i class="fas fa-broom me-2"></i>Delete All Products
+                    </button>
+                </div>
+                <div class="text-muted">
+                    <span id="selectedCount">0</span> products selected
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
 {% if products %}
 <div class="row">
     {% for product in products %}
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="form-check">
+                    <input class="form-check-input product-checkbox" type="checkbox" name="product_ids" value="{{ product.id }}" form="bulkDeleteForm">
+                    <label class="form-check-label">Select</label>
+                </div>
+                <small class="text-muted">ID: {{ product.id }}</small>
+            </div>
             {% if product.image_url %}
             <img src="{{ product.image_url }}" class="card-img-top product-image" alt="{{ product.name }}">
             {% else %}
@@ -97,4 +160,42 @@
     </a>
 </div>
 {% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.product-checkbox');
+    const selectedCount = document.getElementById('selectedCount');
+    
+    function updateSelectedCount() {
+        const checked = document.querySelectorAll('.product-checkbox:checked').length;
+        selectedCount.textContent = checked;
+    }
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedCount);
+    });
+    
+    // Select all functionality
+    const selectAllCheckbox = document.createElement('input');
+    selectAllCheckbox.type = 'checkbox';
+    selectAllCheckbox.className = 'form-check-input me-2';
+    selectAllCheckbox.id = 'selectAll';
+    
+    const selectAllLabel = document.createElement('label');
+    selectAllLabel.className = 'form-check-label';
+    selectAllLabel.htmlFor = 'selectAll';
+    selectAllLabel.textContent = 'Select All';
+    
+    const selectAllDiv = document.querySelector('#bulkDeleteForm .d-flex');
+    selectAllDiv.insertBefore(selectAllCheckbox, selectAllDiv.firstChild);
+    selectAllDiv.insertBefore(selectAllLabel, selectAllCheckbox.nextSibling);
+    
+    selectAllCheckbox.addEventListener('change', function() {
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+        updateSelectedCount();
+    });
+});
+</script>
 {% endblock %}
